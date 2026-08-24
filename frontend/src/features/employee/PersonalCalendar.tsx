@@ -26,7 +26,6 @@ export default function PersonalCalendar() {
     }
   })
 
-  // 2. Fetch holidays
   const { data: rawHolidays, isLoading: loadingHolidays } = useQuery({
     queryKey: ['personal-calendar-holidays'],
     queryFn: async () => {
@@ -42,7 +41,6 @@ export default function PersonalCalendar() {
   const tasks = useMemo(() => safeArray(rawTasks), [rawTasks])
   const holidays = useMemo(() => safeArray(rawHolidays), [rawHolidays])
 
-  // Events on the selected calendar date
   const dateEvents = useMemo(() => {
     if (!selectedDate) return { tasks: [], holidays: [] }
 
@@ -68,8 +66,6 @@ export default function PersonalCalendar() {
 
     return { tasks: matchedTasks, holidays: matchedHolidays }
   }, [tasks, holidays, selectedDate])
-
-  // Next upcoming tasks assigned to this employee
   const upcomingDeadlines = useMemo(() => {
     return tasks
       .filter((t: any) => t.due_date && t.status !== 'Completed')
