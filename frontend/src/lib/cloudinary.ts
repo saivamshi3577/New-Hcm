@@ -5,6 +5,9 @@ export const CLOUDINARY_CONFIG = {
   uploadPreset: 'FusionHRMS',
 }
 
+
+
+
 export type CloudinaryFolder = 
   | 'logos' 
   | 'avatars' 
