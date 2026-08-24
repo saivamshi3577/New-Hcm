@@ -8,6 +8,8 @@ export function usePermissions() {
   const { user, profile, role, permissions: storePermissions } = useAuthStore()
   const [updateVersion, setUpdateVersion] = useState(0)
 
+
+  
   useEffect(() => {
     const handleUpdate = () => {
       setUpdateVersion(v => v + 1)
