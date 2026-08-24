@@ -170,7 +170,7 @@ export default function Documents() {
         ))}
       </div>
 
-      {/* Filters */}
+   
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -196,7 +196,7 @@ export default function Documents() {
         </div>
       </div>
 
-      {/* Documents Grid */}
+    
       {filteredDocs.length === 0 ? (
         <Card className="bg-white border-slate-200 shadow-sm">
           <CardContent className="flex flex-col items-center justify-center py-16 text-center">
@@ -267,7 +267,6 @@ export default function Documents() {
         </div>
       )}
 
-      {/* Upload Modal */}
       {showUploadModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setShowUploadModal(false)}>
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 mx-4 space-y-4" onClick={(e) => e.stopPropagation()}>
