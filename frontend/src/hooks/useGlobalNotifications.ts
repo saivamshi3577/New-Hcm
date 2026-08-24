@@ -3,14 +3,6 @@ import { useAuthStore } from '@/store/authStore'
 import { sendNativeNotification, requestNotificationPermission } from '@/utils/notifications'
 import { useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/use-toast'
-
-/**
- * useGlobalNotifications
- * Previously used Supabase Realtime (postgres_changes) to listen for live
- * This hook now uses polling as a temporary replacement.
-
- */
-
 export function useGlobalNotifications() {
   const { user, role } = useAuthStore()
   const queryClient = useQueryClient()
