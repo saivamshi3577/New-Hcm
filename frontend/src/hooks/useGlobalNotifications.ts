@@ -8,8 +8,6 @@ import { useToast } from '@/hooks/use-toast'
  * useGlobalNotifications
  * 
  * Previously used Supabase Realtime (postgres_changes) to listen for live
- * notifications, announcements, and break status changes.
- 
  * This hook now uses polling as a temporary replacement.
 
  */
