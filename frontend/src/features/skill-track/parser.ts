@@ -7,11 +7,11 @@ export interface ParsedQuestion {
   points: number
 }
 
-// ─── 1. Plain Text / Direct Message Parser ───────────────────────────────
 export function parsePlainText(text: string): ParsedQuestion[] {
   const questions: ParsedQuestion[] = []
+
+
   
-  // Split the text into blocks by lines starting with numbers (e.g. "1.", "2)") using positive lookahead
   const blocks = text.split(/(?=^\s*\d+[\s.)-]+\s*)/gm)
   
   for (const block of blocks) {
