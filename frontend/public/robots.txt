@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Allow: /home
+Allow: /modules
+Allow: /pricing
+Allow: /about
+Allow: /contact
+Allow: /book-demo
+Allow: /login
+Allow: /demo
+
+Sitemap: https://hrms.fusionevalx.ai/sitemap.xml

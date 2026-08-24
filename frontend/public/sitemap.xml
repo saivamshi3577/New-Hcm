@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+  <!-- 1. Home — FusionHRMS Showcase Landing Page -->
+  <url>
+    <loc>https://hrms.fusionevalx.ai/home</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- 2. Modules — Enterprise HRMS & TMS Modules Suite -->
+  <url>
+    <loc>https://hrms.fusionevalx.ai/modules</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 3. Pricing & Plans — Subscription Pricing in Indian Rupees (₹) -->
+  <url>
+    <loc>https://hrms.fusionevalx.ai/pricing</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 4. About Us — Mission, Leadership & ISO Security -->
+  <url>
+    <loc>https://hrms.fusionevalx.ai/about</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 5. Contact Us — Sales & Enterprise Support -->
+  <url>
+    <loc>https://hrms.fusionevalx.ai/contact</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 6. Book a Demo — Schedule 1-on-1 Product Walkthrough -->
+  <url>
+    <loc>https://hrms.fusionevalx.ai/book-demo</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 7. Interactive Demo — Live Interactive Sandbox Portal -->
+  <url>
+    <loc>https://hrms.fusionevalx.ai/demo</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 8. Login — Secure Workspace Login Portal -->
+  <url>
+    <loc>https://hrms.fusionevalx.ai/login</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+</urlset>

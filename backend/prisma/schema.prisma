@@ -1,0 +1,418 @@
+// backend/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// -----------------------------------------
+// 1. Users & Authentication (EMS & Core)
+// -----------------------------------------
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  fullName  String
+  role      Role     @default(EMPLOYEE)
+  managerId String?  @map("manager_id")
+  manager   User?    @relation("ManagerReports", fields: [managerId], references: [id], onDelete: SetNull)
+  reports   User[]   @relation("ManagerReports")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  employeeProfile EmployeeProfile?
+  companyAdminOf  Company?         @relation("CompanyAdmin")
+  ledTeams        Team[]           @relation("TeamLeadUser")
+  chatMembers     ChatMember[]
+  messages        Message[]
+  tasks           Task[]           @relation("TaskAssignee")
+  createdTasks    Task[]           @relation("TaskCreator")
+  appraisals      Appraisal[]      @relation("AppraisalEmployee")
+  givenAppraisals Appraisal[]      @relation("AppraisalReviewer")
+  payslips        Payslip[]
+  documents       Document[]
+  leaveRequests   LeaveRequest[]
+  attendance      Attendance[]
+  activityLogs    ActivityLog[]
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  HR
+  MANAGER
+  TEAM_LEAD
+  EMPLOYEE
+}
+
+model EmployeeProfile {
+  id            String    @id @default(uuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  designation   String?
+  department    String?
+  teamLeadId    String?   @map("team_lead_id")
+  teamLeadName  String?   @map("team_lead_name")
+  teamLeadEmail String?   @map("team_lead_email")
+  createdByAdmin String?  @map("created_by_admin")
+  dateOfJoining DateTime?
+  baseSalary    Float?
+  panNumber     String?   @unique
+  uanNumber     String?   @unique
+  esicNumber    String?   @unique
+  status        String    @default("ACTIVE")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Document {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title      String
+  fileUrl    String
+  documentType String // e.g. ID_PROOF, OFFER_LETTER
+  createdAt  DateTime @default(now())
+}
+
+model LeaveRequest {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leaveType   String   // e.g. SICK, CASUAL, EARNED
+  startDate   DateTime
+  endDate     DateTime
+  reason      String?
+  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Attendance {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date        DateTime @db.Date
+  checkIn     DateTime?
+  checkOut    DateTime?
+  status      String   @default("PRESENT") // PRESENT, ABSENT, HALF_DAY
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, date])
+}
+
+// -----------------------------------------
+// 2. Task Management (TMS & Kanban)
+// -----------------------------------------
+model Project {
+  id             String    @id @default(uuid())
+  name           String
+  key            String?
+  description    String?
+  status         String    @default("ACTIVE")
+  priority       String?   @default("Medium")
+  department     String?
+  lead           String?
+  leadId         String?   @map("lead_id")
+  createdByAdmin String?   @map("created_by_admin")
+  createdById    String?   @map("created_by_id")
+  domain         String?
+  startDate      DateTime? @map("start_date")
+  dueDate        DateTime? @map("due_date")
+  riskLevel      String?   @default("Low") @map("risk_level")
+  privacy        String?   @default("Public")
+  sprints        Sprint[]
+  tasks          Task[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Sprint {
+  id        String   @id @default(uuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name      String
+  startDate DateTime
+  endDate   DateTime
+  goal      String?
+  tasks     Task[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Task {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  status      TaskStatus @default(TODO)
+  priority    Priority  @default(MEDIUM)
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sprintId    String?
+  sprint      Sprint?   @relation(fields: [sprintId], references: [id], onDelete: SetNull)
+  assigneeId  String?
+  assignee    User?     @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  creatorId   String
+  creator     User      @relation("TaskCreator", fields: [creatorId], references: [id])
+  dueDate     DateTime?
+  points             Float?     @default(0)
+  evaluatedPoints    Float?     @default(0) @map("evaluated_points")
+  evaluationFeedback String?    @map("evaluation_feedback")
+  evaluatedAt        DateTime?  @map("evaluated_at")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  DONE
+  BLOCKED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// -----------------------------------------
+// 3. Payroll & Finance (PMS)
+// -----------------------------------------
+model Payslip {
+  id                String   @id @default(uuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  month             Int
+  year              Int
+  basicPay          Float
+  hra               Float
+  epf               Float
+  esi               Float
+  tds               Float
+  specialAllowance  Float?
+  medicalAllowance  Float?
+  conveyance        Float?
+  grossPay          Float?
+  professionalTax   Float?
+  totalDeductions   Float?
+  lopDays           Int?
+  workingDays       Int?
+  netPay            Float
+  status            String   @default("GENERATED") // GENERATED, PAID
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime? @updatedAt
+}
+
+// -----------------------------------------
+// 4. Performance Management (PMS)
+// -----------------------------------------
+model Appraisal {
+  id            String   @id @default(uuid())
+  employeeId    String
+  employee      User     @relation("AppraisalEmployee", fields: [employeeId], references: [id], onDelete: Cascade)
+  reviewerId    String
+  reviewer      User     @relation("AppraisalReviewer", fields: [reviewerId], references: [id])
+  period        String   // e.g. "Q1 2026"
+  score         Float
+  feedback      String?
+  status        String   @default("DRAFT") // DRAFT, SUBMITTED, APPROVED
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// -----------------------------------------
+// 5. Communication (Chat)
+// -----------------------------------------
+model ChatRoom {
+  id        String       @id @default(uuid())
+  name      String
+  type      String       // "direct", "group"
+  members   ChatMember[]
+  messages  Message[]
+  createdAt DateTime     @default(now())
+}
+
+model ChatMember {
+  id       String   @id @default(uuid())
+  roomId   String
+  room     ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinedAt DateTime @default(now())
+
+  @@unique([roomId, userId])
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  roomId    String
+  room      ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  content   String
+  createdAt DateTime @default(now())
+}
+
+// -----------------------------------------
+// 6. System
+// -----------------------------------------
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+}
+
+// -----------------------------------------
+// 7. Multi-Tenant Enterprise Models
+// -----------------------------------------
+model Company {
+  id              String         @id @default(uuid())
+  name            String
+  domain          String?        @unique
+  logoUrl         String?        @map("logo_url")
+  plan            String?        @default("Enterprise")
+  status          String         @default("Active")
+  maxSeats        Int            @default(100) @map("max_seats")
+  phone           String?
+  address         String?
+  adminId         String?        @unique @map("admin_id")
+  admin           User?          @relation("CompanyAdmin", fields: [adminId], references: [id], onDelete: SetNull)
+  adminEmail      String?        @map("admin_email")
+  adminName       String?        @map("admin_name")
+
+  // Shift & Policy Configuration
+  loginTime       String?        @default("09:30") @map("login_time")
+  logoutTime      String?        @default("18:30") @map("logout_time")
+  lateGracePeriod Int?           @default(15) @map("late_grace_period")
+  breakAllowance  Int?           @default(60) @map("break_allowance")
+  sprintQuota     Int?           @default(40) @map("sprint_quota")
+  halfDayHours    Float?         @default(4.5) @map("half_day_hours")
+  fullDayHours    Float?         @default(8.5) @map("full_day_hours")
+  weekendPolicy   String?        @default("ALL_SATURDAYS_OFF") @map("weekend_policy")
+
+  // Relations
+  departments     Department[]
+  teams           Team[]
+  holidays        Holiday[]
+  announcements   Announcement[]
+  policies        HrPolicy[]
+
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+}
+
+model Department {
+  id             String    @id @default(uuid())
+  name           String
+  description    String?
+  companyId      String?   @map("company_id")
+  company        Company?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  adminEmail     String?   @map("admin_email")
+  domain         String?
+  createdByAdmin String?   @map("created_by_admin")
+  teams          Team[]
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+}
+
+model Team {
+  id             String      @id @default(uuid())
+  name           String
+  departmentId   String?     @map("department_id")
+  department     Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  departmentName String?     @map("department_name")
+  leadId         String?     @map("lead_id")
+  lead           User?       @relation("TeamLeadUser", fields: [leadId], references: [id], onDelete: SetNull)
+  leadName       String?     @map("lead_name")
+  leadEmail      String?     @map("lead_email")
+  companyId      String?     @map("company_id")
+  company        Company?    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  adminEmail     String?     @map("admin_email")
+  domain         String?
+  createdByAdmin String?     @map("created_by_admin")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+}
+
+model Holiday {
+  id          String   @id @default(uuid())
+  title       String
+  date        DateTime @db.Date
+  description String?
+  companyId   String?  @map("company_id")
+  company     Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  domain      String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+}
+
+model Announcement {
+  id          String                 @id @default(uuid())
+  title       String
+  content     String
+  pinned      Boolean                @default(false)
+  companyId   String?                @map("company_id")
+  company     Company?               @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  adminEmail  String?                @map("admin_email")
+  domain      String?
+  reactions   AnnouncementReaction[]
+  createdAt   DateTime               @default(now()) @map("created_at")
+  updatedAt   DateTime               @updatedAt @map("updated_at")
+}
+
+model AnnouncementReaction {
+  id             String       @id @default(uuid())
+  announcementId String       @map("announcement_id")
+  announcement   Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  userId         String       @map("user_id")
+  emoji          String
+  createdAt      DateTime     @default(now()) @map("created_at")
+}
+
+model HrPolicy {
+  id                      String                    @id @default(uuid())
+  title                   String
+  category                String                    @default("GENERAL") // TIMINGS, GRACE_PERIOD, LEAVE, ATTENDANCE, CONDUCT, REMOTE_WORK, EXPENSES, APPRAISAL, GENERAL
+  description             String?                   @db.Text
+  content                 String                    @db.Text
+  effectiveDate           DateTime?                 @map("effective_date")
+  version                 String?                   @default("1.0")
+  status                  String                    @default("PUBLISHED") // PUBLISHED, DRAFT, ARCHIVED
+  targetAudience          String                    @default("ALL") @map("target_audience") // ALL, EMPLOYEE, TEAM_LEAD, HR, MANAGER
+  isMandatory             Boolean                   @default(false) @map("is_mandatory")
+  requiresAcknowledgement Boolean                   @default(false) @map("requires_acknowledgement")
+  tags                    String?                   // comma-separated tags or keywords
+  authorName              String?                   @map("author_name")
+  createdById             String?                   @map("created_by_id")
+  createdByAdmin          String?                   @map("created_by_admin")
+  companyId               String?                   @map("company_id")
+  company                 Company?                  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  domain                  String?
+  acknowledgements        HrPolicyAcknowledgement[]
+
+  createdAt               DateTime                  @default(now()) @map("created_at")
+  updatedAt               DateTime                  @updatedAt @map("updated_at")
+}
+
+model HrPolicyAcknowledgement {
+  id             String    @id @default(uuid())
+  policyId       String    @map("policy_id")
+  policy         HrPolicy  @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  userId         String    @map("user_id")
+  userName       String?   @map("user_name")
+  userEmail      String?   @map("user_email")
+  acknowledgedAt DateTime  @default(now()) @map("acknowledged_at")
+
+  @@unique([policyId, userId])
+}
