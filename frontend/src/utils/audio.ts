@@ -14,6 +14,10 @@ const getAudioContext = (): AudioContext | null => {
   return audioCtx;
 };
 
+
+
+
+
 // Unlock AudioContext on first user interaction to bypass autoplay restrictions
 const unlockAudio = () => {
   const ctx = getAudioContext();
