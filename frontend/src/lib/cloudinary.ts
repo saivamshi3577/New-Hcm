@@ -93,6 +93,9 @@ export async function uploadToCloudinary(
     }
   }
 
+
+
+  
   throw new Error('Could not upload image to Cloudinary.')
 }
 
