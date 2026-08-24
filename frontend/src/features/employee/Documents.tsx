@@ -51,8 +51,6 @@ export default function Documents() {
   const [typeFilter, setTypeFilter] = useState('ALL')
   const [uploading, setUploading] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
-
-  // Upload form state
   const [uploadTitle, setUploadTitle] = useState('')
   const [uploadUrl, setUploadUrl] = useState('')
   const [uploadType, setUploadType] = useState('OTHER')
