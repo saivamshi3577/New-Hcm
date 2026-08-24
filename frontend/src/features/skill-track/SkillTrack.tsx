@@ -207,6 +207,14 @@ export default function SkillTrack() {
       console.warn("Error exiting fullscreen:", err)
     }
 
+
+
+
+
+
+
+
+    
     // Reset view states
     setCurrentView('list')
     setSelectedAssessment(null)
