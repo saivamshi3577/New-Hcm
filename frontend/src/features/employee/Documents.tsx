@@ -11,6 +11,7 @@ import { api, safeArray } from '@/lib/api'
 import { useAuthStore } from '@/store/authStore'
 import { useToast } from '@/hooks/use-toast'
 
+
 interface DocumentItem {
   id: string
   title: string
