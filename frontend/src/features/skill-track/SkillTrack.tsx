@@ -69,13 +69,10 @@ export default function SkillTrack() {
   const theme = isAdmin ? themeMap.teal : themeMap.violet
   const primaryBg = theme.primaryBg
   const textAccent = theme.textAccent
-
-  // Month-based filtering: Reset test submissions view per month (default to current month, e.g. August)
   const currentMonthKey = new Date().toLocaleString('default', { month: 'short', year: 'numeric' })
   const [selectedMonth, setSelectedMonth] = useState<string>(currentMonthKey)
   const [availableSkillTrackMonths, setAvailableSkillTrackMonths] = useState<string[]>([currentMonthKey, 'All Time'])
 
-  // Common States
   const [assessments, setAssessments] = useState<Assessment[]>([])
   const [loading, setLoading] = useState(true)
   const [currentView, setCurrentView] = useState<'list' | 'create' | 'exam' | 'results' | 'reports'>('list')
