@@ -1,11 +1,12 @@
+import { useState, useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ShieldCheck, User, Settings, AlertTriangle, Loader2, Activity, Zap, Trash2, AlertCircle } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { ShieldCheck, User, Settings, AlertTriangle, Loader2, Activity, Zap, Trash2, AlertCircle, Search, Filter, RefreshCw, FileText, Lock } from 'lucide-react'
 import { api, safeArray } from '@/lib/api'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
 
 interface ActivityLog {
@@ -23,6 +24,8 @@ export default function ActivityLogs() {
   const { toast } = useToast()
   const [isClearOpen, setIsClearOpen] = useState(false)
   const [isClearing, setIsClearing] = useState(false)
+  const [categoryFilter, setCategoryFilter] = useState('All')
+  const [searchTerm, setSearchTerm] = useState('')
 
   const getIcon = (category: string) => {
     switch (category) {
@@ -35,10 +38,10 @@ export default function ActivityLogs() {
 
   const getCategoryBadgeClass = (category: string) => {
     switch (category) {
-      case 'Security': return 'text-emerald-700 bg-emerald-50 border-emerald-200/60'
-      case 'Access': return 'text-indigo-700 bg-indigo-50 border-indigo-200/60'
-      case 'Project': return 'text-blue-700 bg-blue-50 border-blue-200/60'
-      default: return 'text-amber-700 bg-amber-50 border-amber-200/60'
+      case 'Security': return 'text-emerald-700 bg-emerald-50 border-emerald-200'
+      case 'Access': return 'text-indigo-700 bg-indigo-50 border-indigo-200'
+      case 'Project': return 'text-blue-700 bg-blue-50 border-blue-200'
+      default: return 'text-amber-700 bg-amber-50 border-amber-200'
     }
   }
 
@@ -74,10 +77,9 @@ export default function ActivityLogs() {
       const logsData = safeArray(data, 'logs')
       
       return logsData.map((l: any): ActivityLog => {
-        // Supabase might return array or single object depending on relationship setup
-        const userData = Array.isArray(l.user) ? l.user[0] : l.user;
-        const roleData = userData?.role;
-        const roleName = Array.isArray(roleData) ? roleData[0]?.name : roleData?.name;
+        const userData = Array.isArray(l.user) ? l.user[0] : l.user
+        const roleData = userData?.role
+        const roleName = Array.isArray(roleData) ? roleData[0]?.name : roleData?.name
         
         return {
           id: l.id,
@@ -90,25 +92,37 @@ export default function ActivityLogs() {
         }
       })
     },
-    refetchInterval: 15000 // Refetch every 15 seconds for dynamic updates
+    refetchInterval: 15000
   })
 
-  // Function to render the dynamic sentence
+  const filteredLogs = useMemo(() => {
+    if (!logs) return []
+    return logs.filter(l => {
+      const matchCat = categoryFilter === 'All' || l.category.toLowerCase() === categoryFilter.toLowerCase()
+      const matchSearch = 
+        !searchTerm || 
+        l.user.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        l.action.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        l.details.toLowerCase().includes(searchTerm.toLowerCase())
+      return matchCat && matchSearch
+    })
+  }, [logs, categoryFilter, searchTerm])
+
   const renderDynamicAction = (log: ActivityLog) => {
     return (
       <div className="flex flex-col gap-0.5">
-        <div className="text-[13px] leading-relaxed flex items-center flex-wrap gap-1.5">
-          <span className="font-extrabold text-slate-800">{log.user}</span>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100/80 px-1.5 py-0.5 rounded border border-slate-200/60">
+        <div className="text-xs leading-relaxed flex items-center flex-wrap gap-1.5">
+          <span className="font-extrabold text-slate-900">{log.user}</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
             {log.role}
           </span>
           <span className="text-slate-600 font-medium">
             {log.details ? log.details : `performed action: ${log.action.toLowerCase()}`}
           </span>
         </div>
-        <div className="text-[11px] text-slate-400 font-medium flex items-center gap-1">
-          <Zap className="h-3 w-3 text-indigo-400" />
-          Action Trigger: <span className="font-semibold text-indigo-600/80">{log.action}</span>
+        <div className="text-[10px] text-slate-400 font-medium flex items-center gap-1">
+          <Zap className="h-3 w-3 text-indigo-500" />
+          Trigger: <span className="font-semibold text-indigo-700">{log.action}</span>
         </div>
       </div>
     )
@@ -117,12 +131,7 @@ export default function ActivityLogs() {
   const handleClearLogs = async () => {
     setIsClearing(true)
     try {
-      try {
-        await api.delete('/activity_logs?id_not_null=true')
-      } catch (error) {
-        throw error
-      }
-
+      await api.delete('/activity_logs?id_not_null=true')
       await queryClient.invalidateQueries({ queryKey: ['activity-logs'] })
       
       toast({
@@ -142,88 +151,139 @@ export default function ActivityLogs() {
   }
 
   return (
-    <div className="space-y-5 sa-page-enter text-slate-800">
+    <div className="space-y-6 text-foreground pb-8">
+      {/* ── Header Section ────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold tracking-tight sa-gradient-text">System Audit Trail</h2>
-          <p className="text-slate-400 mt-0.5 text-sm">Immutable audit logs tracking system state modifications, authentication triggers, and user activity.</p>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
+            System <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 bg-clip-text text-transparent">Audit Trail</span>
+          </h2>
+          <p className="text-slate-500 text-sm mt-0.5 font-medium">
+            Immutable governance audit logs tracking state modifications, role changes, and compliance actions.
+          </p>
         </div>
         
-        <Dialog open={isClearOpen} onOpenChange={setIsClearOpen}>
-          <DialogTrigger asChild>
-            <Button variant="outline" className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 bg-white shadow-sm shrink-0 transition-colors" disabled={!logs || logs.length === 0}>
-              <Trash2 className="w-4 h-4 mr-2" />
-              Clear Logs
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md bg-white border-slate-200">
-            <DialogHeader>
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4 shadow-sm">
-                <AlertCircle className="h-6 w-6 text-red-600" />
-              </div>
-              <DialogTitle className="text-center text-xl text-slate-900 font-extrabold">Clear Audit Trail?</DialogTitle>
-              <DialogDescription className="text-center text-slate-500 pt-2 font-medium">
-                This action cannot be undone. This will permanently delete all activity logs from the database. Are you absolutely sure you want to proceed?
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter className="sm:justify-center flex-col sm:flex-row gap-2 mt-4 pt-4 border-t border-slate-100">
-              <Button type="button" variant="outline" onClick={() => setIsClearOpen(false)} className="w-full sm:w-auto border-slate-200 font-bold text-slate-700" disabled={isClearing}>
-                Cancel
+        <div className="flex items-center gap-3">
+          <Dialog open={isClearOpen} onOpenChange={setIsClearOpen}>
+            <DialogTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 bg-white font-bold text-xs h-9 rounded-xl shadow-2xs shrink-0 transition-colors" 
+                disabled={!logs || logs.length === 0}
+              >
+                <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                Clear Logs
               </Button>
-              <Button type="button" variant="destructive" onClick={handleClearLogs} className="w-full sm:w-auto bg-red-600 hover:bg-red-700 shadow-md font-bold" disabled={isClearing}>
-                {isClearing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}
-                Yes, clear all logs
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md bg-white border-slate-200 rounded-2xl">
+              <DialogHeader>
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-2 shadow-sm">
+                  <AlertCircle className="h-6 w-6 text-red-600" />
+                </div>
+                <DialogTitle className="text-center text-lg text-slate-900 font-black">Clear Audit Trail?</DialogTitle>
+                <DialogDescription className="text-center text-slate-500 pt-1 text-xs">
+                  This action cannot be undone. This will permanently delete all activity logs from the audit database.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="sm:justify-center flex-col sm:flex-row gap-2 mt-4 pt-3 border-t border-slate-100">
+                <Button type="button" variant="outline" onClick={() => setIsClearOpen(false)} className="w-full sm:w-auto border-slate-200 font-bold text-xs rounded-xl" disabled={isClearing}>
+                  Cancel
+                </Button>
+                <Button type="button" variant="destructive" onClick={handleClearLogs} className="w-full sm:w-auto bg-red-600 hover:bg-red-700 shadow-md font-bold text-xs rounded-xl" disabled={isClearing}>
+                  {isClearing ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5 mr-1.5" />}
+                  Yes, clear all logs
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
-      <div className="sa-card sa-gradient-border overflow-hidden">
-        <div className="p-4 pb-3 flex justify-between items-center bg-slate-50/50 border-b border-slate-100/50">
-          <div>
-            <h3 className="text-sm font-bold text-slate-800">Real-time Event Stream</h3>
-            <p className="text-xs text-slate-400 mt-0.5">Activity trail dynamically mapping users, roles, and targeted entities.</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
-            </span>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Live</span>
-          </div>
-        </div>
-        <div className="px-2 pb-2 pt-2">
-          {isLoading ? (
-            <div className="flex h-40 items-center justify-center">
-              <Loader2 className="h-5 w-5 animate-spin text-indigo-500" />
-            </div>
-          ) : !logs || logs.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="h-11 w-11 rounded-full sa-icon-box flex items-center justify-center mb-3">
-                <Activity className="h-5 w-5 text-indigo-500" />
+      {/* ── Main Activity Stream Card ─────────────────────────────────── */}
+      <Card className="bg-white/85 backdrop-blur-xl border-slate-200/80 rounded-2xl shadow-2xs overflow-hidden">
+        <CardHeader className="pb-4 pt-5 px-5 border-b border-slate-100">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-indigo-600" />
+                  <span>Real-time Event Stream</span>
+                </CardTitle>
+                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Live Sync
+                </div>
               </div>
-              <h3 className="text-sm font-bold text-slate-800">No Activity Logs</h3>
+              <CardDescription className="text-xs text-slate-500 mt-0.5">
+                Real-time activity trail dynamically mapping actors, roles, and event triggers
+              </CardDescription>
+            </div>
+
+            {/* Filter controls */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              <div className="relative w-full sm:w-56">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+                <Input
+                  placeholder="Filter logs by user, action..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="h-8.5 pl-8 bg-slate-50 border-slate-200 text-xs rounded-xl"
+                />
+              </div>
+
+              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+                {['All', 'Security', 'Access', 'Project'].map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setCategoryFilter(cat)}
+                    className={`px-3 py-1 text-[11px] font-bold rounded-lg transition-all ${
+                      categoryFilter === cat
+                        ? 'bg-white text-indigo-700 shadow-2xs'
+                        : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="px-5 pb-5 pt-4">
+          {isLoading ? (
+            <div className="flex h-48 items-center justify-center">
+              <div className="flex flex-col items-center gap-3">
+                <div className="h-9 w-9 animate-spin rounded-full border-[3px] border-indigo-600 border-t-transparent" />
+                <p className="text-xs text-slate-500 font-semibold">Streaming audit events...</p>
+              </div>
+            </div>
+          ) : !filteredLogs || filteredLogs.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-14 text-center">
+              <div className="h-12 w-12 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center mb-3">
+                <FileText className="h-6 w-6 text-indigo-600" />
+              </div>
+              <h3 className="text-sm font-bold text-slate-900">No matching activity events</h3>
               <p className="text-xs text-slate-400 mt-1 max-w-sm">
-                There are no audit logs recorded yet. Once users perform actions like creating projects or modifying access, they will appear here.
+                System activities and administrative actions will stream here in real time.
               </p>
             </div>
           ) : (
-            <div className="rounded-xl border border-slate-200/60 overflow-hidden shadow-sm">
-              <Table>
-                <TableHeader className="bg-slate-50/80 border-b border-slate-200/60">
-                  <TableRow className="hover:bg-transparent">
+            <div className="rounded-xl border border-slate-200/80 overflow-hidden shadow-2xs">
+              <Table className="text-xs">
+                <TableHeader className="bg-slate-50/90 border-b border-slate-200">
+                  <TableRow>
                     <TableHead className="w-[48px]"></TableHead>
-                    <TableHead className="font-extrabold text-slate-500 text-[10px] uppercase tracking-widest">Activity Event</TableHead>
-                    <TableHead className="font-extrabold text-slate-500 text-[10px] uppercase tracking-widest w-[140px]">Timestamp</TableHead>
-                    <TableHead className="text-right font-extrabold text-slate-500 text-[10px] uppercase tracking-widest w-[110px]">Context</TableHead>
+                    <TableHead className="font-extrabold text-slate-700 uppercase text-[10px] tracking-wider">Activity Event</TableHead>
+                    <TableHead className="font-extrabold text-slate-700 uppercase text-[10px] tracking-wider w-[140px]">Timestamp</TableHead>
+                    <TableHead className="text-right font-extrabold text-slate-700 uppercase text-[10px] tracking-wider w-[110px]">Category</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody className="divide-y divide-slate-100/80">
-                  {logs.map((log) => (
-                    <TableRow key={log.id} className="hover:bg-slate-50/60 transition-colors group">
+                <TableBody className="divide-y divide-slate-100">
+                  {filteredLogs.map((log) => (
+                    <TableRow key={log.id} className="hover:bg-indigo-50/20 transition-colors group">
                       <TableCell className="align-middle py-3 px-4">
-                        <div className="h-9 w-9 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:border-indigo-200 transition-colors">
+                        <div className="h-8.5 w-8.5 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-2xs group-hover:border-indigo-300 transition-colors">
                           {getIcon(log.category)}
                         </div>
                       </TableCell>
@@ -244,8 +304,8 @@ export default function ActivityLogs() {
               </Table>
             </div>
           )}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

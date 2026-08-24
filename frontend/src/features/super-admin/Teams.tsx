@@ -655,30 +655,27 @@ export default function Teams() {
   return (
     <div className="space-y-5 sa-page-enter text-slate-800 pb-8">
       {/* Top Bar Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="p-1.5 bg-indigo-50 text-indigo-600 rounded-xl border border-indigo-200">
-              <Layers className="w-5 h-5" />
-            </span>
-            <h2 className="text-2xl font-extrabold tracking-tight sa-gradient-text">Teams & Departments</h2>
-          </div>
-          <p className="text-slate-400 mt-1 text-xs sm:text-sm">
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
+            Teams & <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 bg-clip-text text-transparent">Departments</span>
+          </h2>
+          <p className="text-slate-500 text-sm mt-0.5 font-medium">
             {isSA 
               ? 'Multi-tenant organization governance: manage departments, squads, and leads across tenant companies.' 
               : `Manage organizational structure, departments, teams, and team leads for ${currentTenant?.companyName || 'your company'}.`}
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
           {isSA && companies.length > 0 && (
-            <div className="flex items-center gap-1.5 mr-2">
+            <div className="flex items-center gap-1.5 mr-1">
               <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Company:</span>
               <Select value={selectedCompanyFilter} onValueChange={setSelectedCompanyFilter}>
-                <SelectTrigger className="h-9 w-[190px] text-xs bg-slate-50 border-slate-200 rounded-xl font-semibold">
+                <SelectTrigger className="h-8.5 w-[190px] text-xs bg-white border-slate-200 rounded-xl font-bold">
                   <SelectValue placeholder="All Companies" />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-slate-200">
+                <SelectContent className="bg-white border-slate-200 text-xs font-semibold">
                   <SelectItem value="all">🌐 All Tenant Companies</SelectItem>
                   {companies.map((c: any) => (
                     <SelectItem key={c.id} value={c.id}>
@@ -699,23 +696,23 @@ export default function Teams() {
 
           <Button 
             variant="outline" 
-            className="border-slate-200 text-slate-700 hover:bg-indigo-50/40 hover:border-indigo-200 h-9 text-xs rounded-xl transition-all flex items-center font-semibold"
+            className="border-slate-200 text-slate-700 hover:bg-slate-50 h-8.5 text-xs rounded-xl shadow-2xs font-bold flex items-center"
             onClick={() => setIsHolidayOpen(true)}
           >
             <Calendar className="mr-1.5 h-3.5 w-3.5 text-indigo-500" />
-            Holidays Calendar
+            Holidays
           </Button>
 
           <Dialog open={isDeptOpen} onOpenChange={setIsDeptOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline" className="border-slate-200 text-slate-700 hover:bg-indigo-50/40 hover:border-indigo-200 h-9 text-xs rounded-xl transition-all font-semibold">
+              <Button variant="outline" className="border-slate-200 text-slate-700 hover:bg-slate-50 h-8.5 text-xs rounded-xl shadow-2xs font-bold flex items-center">
                 <Building className="mr-1.5 h-3.5 w-3.5 text-indigo-500" />
-                Add Department
+                Add Dept
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] bg-white/95 backdrop-blur-xl border-slate-200">
+            <DialogContent className="sm:max-w-[425px] bg-white/95 backdrop-blur-xl border-slate-200 rounded-2xl">
               <DialogHeader>
-                <DialogTitle className="font-bold text-slate-900">Create Department</DialogTitle>
+                <DialogTitle className="font-extrabold text-lg text-slate-900">Create Department</DialogTitle>
                 <DialogDescription className="text-slate-500 text-xs">Add a new department for your company workspace.</DialogDescription>
               </DialogHeader>
               <Form {...deptForm}>
@@ -725,9 +722,9 @@ export default function Teams() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-semibold text-slate-700">Department Name *</FormLabel>
+                        <FormLabel className="text-xs font-bold text-slate-700">Department Name *</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g. Engineering & IT" className="h-9 text-xs" {...field} />
+                          <Input placeholder="e.g. Engineering & IT" className="h-9 text-xs rounded-xl" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -738,18 +735,18 @@ export default function Teams() {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-semibold text-slate-700">Description (Optional)</FormLabel>
+                        <FormLabel className="text-xs font-bold text-slate-700">Description (Optional)</FormLabel>
                         <FormControl>
-                          <Input placeholder="Software development & tech ops" className="h-9 text-xs" {...field} />
+                          <Input placeholder="Software development & tech ops" className="h-9 text-xs rounded-xl" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <DialogFooter className="pt-2">
-                    <Button type="button" variant="outline" onClick={() => setIsDeptOpen(false)} className="h-9 text-xs border-slate-200">Cancel</Button>
-                    <Button type="submit" disabled={addDeptMutation.isPending} className="sa-btn-primary h-9 px-4 text-xs font-bold">
-                      {addDeptMutation.isPending && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+                    <Button type="button" variant="outline" onClick={() => setIsDeptOpen(false)} className="h-8.5 text-xs font-bold border-slate-200 rounded-xl">Cancel</Button>
+                    <Button type="submit" disabled={addDeptMutation.isPending} className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold text-xs h-8.5 px-4 rounded-xl shadow-md shadow-indigo-500/20">
+                      {addDeptMutation.isPending && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
                       Create Department
                     </Button>
                   </DialogFooter>
@@ -760,14 +757,14 @@ export default function Teams() {
 
           <Dialog open={isTeamOpen} onOpenChange={setIsTeamOpen}>
             <DialogTrigger asChild>
-              <Button className="sa-btn-primary h-9 px-4 rounded-xl font-bold text-xs">
-                <Plus className="mr-1.5 h-3.5 w-3.5" />
+              <Button className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold text-xs h-8.5 px-4 rounded-xl shadow-md shadow-indigo-500/20 transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer">
+                <Plus className="h-3.5 w-3.5" />
                 Create Team
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] bg-white/95 backdrop-blur-xl border-slate-200">
+            <DialogContent className="sm:max-w-[425px] bg-white/95 backdrop-blur-xl border-slate-200 rounded-2xl">
               <DialogHeader>
-                <DialogTitle className="font-bold text-slate-900">Create Team</DialogTitle>
+                <DialogTitle className="font-extrabold text-lg text-slate-900">Create Team</DialogTitle>
                 <DialogDescription className="text-slate-500 text-xs">Create a squad team and assign a Team Lead.</DialogDescription>
               </DialogHeader>
               <Form {...teamForm}>
@@ -777,9 +774,9 @@ export default function Teams() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-semibold text-slate-700">Team Name *</FormLabel>
+                        <FormLabel className="text-xs font-bold text-slate-700">Team Name *</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g. Frontend Core Squad" className="h-9 text-xs" {...field} />
+                          <Input placeholder="e.g. Frontend Core Squad" className="h-9 text-xs rounded-xl" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -790,10 +787,10 @@ export default function Teams() {
                     name="departmentId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-semibold text-slate-700">Associated Department *</FormLabel>
+                        <FormLabel className="text-xs font-bold text-slate-700">Associated Department *</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl><SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select department" /></SelectTrigger></FormControl>
-                          <SelectContent className="bg-white border-slate-200">
+                          <FormControl><SelectTrigger className="h-9 text-xs rounded-xl"><SelectValue placeholder="Select department" /></SelectTrigger></FormControl>
+                          <SelectContent className="bg-white border-slate-200 text-xs font-semibold">
                             {departments?.map((dept) => (<SelectItem key={dept.id} value={dept.id}>{dept.name}</SelectItem>))}
                             {departments?.length === 0 && (<SelectItem value="none" disabled>No departments yet. Create one first.</SelectItem>)}
                           </SelectContent>
@@ -807,10 +804,10 @@ export default function Teams() {
                     name="leadId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-semibold text-slate-700">Assigned Team Lead *</FormLabel>
+                        <FormLabel className="text-xs font-bold text-slate-700">Assigned Team Lead *</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl><SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select team lead" /></SelectTrigger></FormControl>
-                          <SelectContent className="bg-white border-slate-200">
+                          <FormControl><SelectTrigger className="h-9 text-xs rounded-xl"><SelectValue placeholder="Select team lead" /></SelectTrigger></FormControl>
+                          <SelectContent className="bg-white border-slate-200 text-xs font-semibold">
                             {teamLeads?.map((lead) => (<SelectItem key={lead.id} value={lead.id}>{lead.full_name}</SelectItem>))}
                             {teamLeads?.length === 0 && (<SelectItem value="none" disabled>No team leads found.</SelectItem>)}
                           </SelectContent>
@@ -820,9 +817,9 @@ export default function Teams() {
                     )}
                   />
                   <DialogFooter className="pt-2">
-                    <Button type="button" variant="outline" onClick={() => setIsTeamOpen(false)} className="h-9 text-xs border-slate-200">Cancel</Button>
-                    <Button type="submit" disabled={addTeamMutation.isPending} className="sa-btn-primary h-9 px-4 text-xs font-bold">
-                      {addTeamMutation.isPending && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+                    <Button type="button" variant="outline" onClick={() => setIsTeamOpen(false)} className="h-8.5 text-xs font-bold border-slate-200 rounded-xl">Cancel</Button>
+                    <Button type="submit" disabled={addTeamMutation.isPending} className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold text-xs h-8.5 px-4 rounded-xl shadow-md shadow-indigo-500/20">
+                      {addTeamMutation.isPending && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
                       Create Team
                     </Button>
                   </DialogFooter>
@@ -834,25 +831,25 @@ export default function Teams() {
       </div>
 
       {/* Tabs & Search Bar */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
+      <div className="bg-white/85 backdrop-blur-xl rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
         <div className="p-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 p-1 bg-slate-100/80 rounded-xl border border-slate-200/60 overflow-x-auto">
             <button
               onClick={() => setActiveTab('teams')}
-              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+              className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all ${
                 activeTab === 'teams' 
-                  ? 'bg-indigo-600 text-white shadow-xs' 
-                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                  ? 'bg-white text-indigo-700 shadow-2xs' 
+                  : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               Teams ({filteredTeams.length})
             </button>
             <button
               onClick={() => setActiveTab('departments')}
-              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+              className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all ${
                 activeTab === 'departments' 
-                  ? 'bg-indigo-600 text-white shadow-xs' 
-                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                  ? 'bg-white text-indigo-700 shadow-2xs' 
+                  : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               Departments ({filteredDepartments.length})
@@ -860,12 +857,12 @@ export default function Teams() {
           </div>
 
           <div className="relative w-full md:w-64">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3" />
+            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
             <Input
               placeholder="Search teams or departments..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-9 pl-8 bg-slate-50 border-slate-200 text-xs rounded-xl"
+              className="h-8.5 pl-8 bg-slate-50 border-slate-200 text-xs rounded-xl"
             />
           </div>
         </div>

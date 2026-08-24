@@ -882,23 +882,22 @@ export default function ManageAdmins() {
   return (
     <div className="space-y-6 sa-page-enter text-slate-800 pb-8">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="p-1.5 bg-indigo-50 text-indigo-600 rounded-xl border border-indigo-200">
-              <Building2 className="w-5 h-5" />
-            </span>
-            <h2 className="text-2xl font-extrabold tracking-tight sa-gradient-text">Multi-Tenant Company & Policy Setup</h2>
-          </div>
-          <p className="text-slate-400 mt-1 text-xs sm:text-sm">Provision companies, shift times, grace periods, working days, GPS geofencing, sprint point quotas, and admin credentials.</p>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
+            Multi-Tenant <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 bg-clip-text text-transparent">Company & Admin Setup</span>
+          </h2>
+          <p className="text-slate-500 text-sm mt-0.5 font-medium">
+            Provision client organizations, shift policies, GPS geofencing, sprint point quotas, and tenant administrator credentials.
+          </p>
         </div>
         
         {/* Provision Dialog */}
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button className="sa-btn-primary h-10 px-4 rounded-xl font-bold flex items-center shadow-md">
-              <Building className="mr-2 h-4 w-4" />
-              Provision Company & Admin
+            <Button className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold text-xs h-9 px-4 rounded-xl shadow-md shadow-indigo-500/20 transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer">
+              <Building className="h-3.5 w-3.5" />
+              <span>Provision Company & Admin</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[680px] bg-white/95 backdrop-blur-xl border-slate-200 max-h-[92vh] overflow-y-auto p-6 rounded-2xl">
@@ -1462,75 +1461,83 @@ export default function ManageAdmins() {
         </Dialog>
       </div>
 
-      {/* KPI Cards Row */}
+      {/* ── 4 KPI Stat Cards ────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-1">
-          <div className="flex justify-between items-center text-slate-400 text-xs font-semibold uppercase tracking-wider">
+        <div className="bg-white/80 backdrop-blur-xl border border-slate-200/80 rounded-2xl p-5 shadow-2xs hover-lift transition-all">
+          <div className="flex justify-between items-center text-slate-400 text-xs font-extrabold uppercase tracking-wider mb-2">
             <span>Companies</span>
-            <Building2 className="w-4 h-4 text-indigo-600" />
+            <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200/60 flex items-center justify-center text-indigo-600">
+              <Building2 className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl font-black sa-gradient-text">{companies.length}</div>
-          <p className="text-[11px] text-slate-400 font-medium">Managed company accounts</p>
+          <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">{companies.length}</div>
+          <p className="text-[10px] text-indigo-600 font-bold mt-1">Active client organizations</p>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-1">
-          <div className="flex justify-between items-center text-slate-400 text-xs font-semibold uppercase tracking-wider">
-            <span>Company Admins</span>
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+        <div className="bg-white/80 backdrop-blur-xl border border-slate-200/80 rounded-2xl p-5 shadow-2xs hover-lift transition-all">
+          <div className="flex justify-between items-center text-slate-400 text-xs font-extrabold uppercase tracking-wider mb-2">
+            <span>Tenant Admins</span>
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-200/60 flex items-center justify-center text-emerald-600">
+              <ShieldCheck className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl font-black text-emerald-600">{companyAdmins.length}</div>
-          <p className="text-[11px] text-emerald-600 font-medium">Provisioned admin logins</p>
+          <div className="text-2xl sm:text-3xl font-black text-emerald-700 tracking-tight">{companyAdmins.length}</div>
+          <p className="text-[10px] text-emerald-600 font-bold mt-1">Designated administrative logins</p>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-1">
-          <div className="flex justify-between items-center text-slate-400 text-xs font-semibold uppercase tracking-wider">
+        <div className="bg-white/80 backdrop-blur-xl border border-slate-200/80 rounded-2xl p-5 shadow-2xs hover-lift transition-all">
+          <div className="flex justify-between items-center text-slate-400 text-xs font-extrabold uppercase tracking-wider mb-2">
             <span>Total Seat Pool</span>
-            <Users className="w-4 h-4 text-blue-600" />
+            <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200/60 flex items-center justify-center text-blue-600">
+              <Users className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl font-black text-blue-600">{totalSeats.toLocaleString()}</div>
-          <p className="text-[11px] text-blue-600 font-medium">Combined member capacity</p>
+          <div className="text-2xl sm:text-3xl font-black text-blue-700 tracking-tight">{totalSeats.toLocaleString()}</div>
+          <p className="text-[10px] text-blue-600 font-bold mt-1">Combined platform capacity</p>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-1">
-          <div className="flex justify-between items-center text-slate-400 text-xs font-semibold uppercase tracking-wider">
+        <div className="bg-white/80 backdrop-blur-xl border border-slate-200/80 rounded-2xl p-5 shadow-2xs hover-lift transition-all">
+          <div className="flex justify-between items-center text-slate-400 text-xs font-extrabold uppercase tracking-wider mb-2">
             <span>System Status</span>
-            <CheckCircle2 className="w-4 h-4 text-teal-600" />
+            <div className="w-8 h-8 rounded-xl bg-teal-50 border border-teal-200/60 flex items-center justify-center text-teal-600">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl font-black text-teal-600">Active</div>
-          <p className="text-[11px] text-teal-600 font-medium">All tenant nodes online</p>
+          <div className="text-2xl sm:text-3xl font-black text-teal-700 tracking-tight">Active</div>
+          <p className="text-[10px] text-teal-600 font-bold mt-1">Multi-tenant nodes synced</p>
         </div>
       </div>
 
       {/* Interactive Tabs Header & Search */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
+      <div className="bg-white/85 backdrop-blur-xl rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
         <div className="p-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 p-1 bg-slate-100/80 rounded-xl border border-slate-200/60 overflow-x-auto">
             <button
               onClick={() => setActiveTab('companies')}
-              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+              className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all ${
                 activeTab === 'companies' 
-                  ? 'bg-indigo-600 text-white shadow-xs' 
-                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                  ? 'bg-white text-indigo-700 shadow-2xs' 
+                  : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               Company Directory ({filteredCompanies.length})
             </button>
             <button
               onClick={() => setActiveTab('admins')}
-              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+              className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all ${
                 activeTab === 'admins' 
-                  ? 'bg-indigo-600 text-white shadow-xs' 
-                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                  ? 'bg-white text-indigo-700 shadow-2xs' 
+                  : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               Admin Credentials ({filteredAdmins.length})
             </button>
             <button
               onClick={() => setActiveTab('permissions')}
-              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 ${
                 activeTab === 'permissions' 
-                  ? 'bg-indigo-600 text-white shadow-xs' 
-                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                  ? 'bg-white text-indigo-700 shadow-2xs' 
+                  : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               <ShieldCheck className="w-3.5 h-3.5" /> Roles & Permissions Matrix
@@ -1538,12 +1545,12 @@ export default function ManageAdmins() {
           </div>
 
           <div className="relative w-full md:w-64">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3" />
+            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
             <Input
               placeholder="Search companies, domain, admin..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-9 pl-8 bg-slate-50 border-slate-200 text-xs rounded-xl"
+              className="h-8.5 pl-8 bg-slate-50 border-slate-200 text-xs rounded-xl"
             />
           </div>
         </div>

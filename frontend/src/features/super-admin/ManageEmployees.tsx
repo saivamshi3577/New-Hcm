@@ -753,35 +753,52 @@ export default function ManageEmployees() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-foreground pb-8">
       {/* Header Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Employee Management</h1>
-          <p className="text-sm text-slate-500">View and manage employees, attendance, and active breaks across departments.</p>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
+            Workforce & <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 bg-clip-text text-transparent">Employee Directory</span>
+          </h2>
+          <p className="text-slate-500 text-sm mt-0.5 font-medium">
+            Multi-tenant employee governance, live attendance logs, and active squad break telemetry.
+          </p>
         </div>
-        <Button onClick={() => setIsAddOpen(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm">
-          <UserPlus className="mr-2 h-4 w-4" /> Add Employee
+        <Button onClick={() => setIsAddOpen(true)} className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold text-xs h-9 px-4 rounded-xl shadow-md shadow-indigo-500/20 transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer">
+          <UserPlus className="h-3.5 w-3.5" />
+          <span>Add Employee</span>
         </Button>
       </div>
 
       {/* Main Tabs */}
-      <div className="flex border-b border-slate-200 gap-6">
+      <div className="bg-white/85 backdrop-blur-xl rounded-2xl border border-slate-200/80 p-1.5 shadow-2xs flex gap-2">
         <button
           onClick={() => setActiveTab('directory')}
-          className={`pb-3 text-sm font-semibold border-b-2 transition-colors ${activeTab === 'directory' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+            activeTab === 'directory' 
+              ? 'bg-white text-indigo-700 shadow-2xs' 
+              : 'text-slate-500 hover:text-slate-900'
+          }`}
         >
           Employee Directory ({employees?.length || 0})
         </button>
         <button
           onClick={() => setActiveTab('attendance')}
-          className={`pb-3 text-sm font-semibold border-b-2 transition-colors ${activeTab === 'attendance' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+            activeTab === 'attendance' 
+              ? 'bg-white text-indigo-700 shadow-2xs' 
+              : 'text-slate-500 hover:text-slate-900'
+          }`}
         >
           Today's Attendance ({attendanceListWithUsers.length})
         </button>
         <button
           onClick={() => setActiveTab('breaks')}
-          className={`pb-3 text-sm font-semibold border-b-2 transition-colors ${activeTab === 'breaks' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+            activeTab === 'breaks' 
+              ? 'bg-white text-indigo-700 shadow-2xs' 
+              : 'text-slate-500 hover:text-slate-900'
+          }`}
         >
           Active Breaks ({breakLogsListWithUsers.filter(b => b.onBreak).length})
         </button>
@@ -789,25 +806,25 @@ export default function ManageEmployees() {
 
       {/* Directory Tab View */}
       {activeTab === 'directory' && (
-        <Card className="border border-slate-200/80 shadow-sm">
-          <CardHeader className="pb-4">
+        <Card className="bg-white/85 backdrop-blur-xl border-slate-200/80 rounded-2xl shadow-2xs overflow-hidden">
+          <CardHeader className="pb-4 pt-5 px-5">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
                 <Input
                   placeholder="Search employees by name or email..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 bg-slate-50/50"
+                  className="pl-8.5 bg-slate-50 border-slate-200 text-xs rounded-xl h-8.5"
                 />
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
                 {isSA && (
                   <Select value={companyFilter} onValueChange={setCompanyFilter}>
-                    <SelectTrigger className="w-[180px] bg-slate-50 border-slate-200 text-xs font-semibold">
+                    <SelectTrigger className="w-[180px] bg-slate-50 border-slate-200 text-xs font-bold rounded-xl h-8.5">
                       <SelectValue placeholder="All Companies" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white border-slate-200">
+                    <SelectContent className="bg-white border-slate-200 text-xs font-semibold">
                       <SelectItem value="all">All Companies / Admins</SelectItem>
                       {companies?.map((c: any) => (
                         <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
@@ -817,10 +834,10 @@ export default function ManageEmployees() {
                 )}
 
                 <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
-                  <SelectTrigger className="w-[160px] bg-slate-50 border-slate-200 text-xs font-semibold">
+                  <SelectTrigger className="w-[160px] bg-slate-50 border-slate-200 text-xs font-bold rounded-xl h-8.5">
                     <SelectValue placeholder="Department" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-slate-200">
+                  <SelectContent className="bg-white border-slate-200 text-xs font-semibold">
                     <SelectItem value="all">All Departments</SelectItem>
                     {departments?.map((d: any) => (
                       <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Megaphone, Pin, Plus, Edit2, Trash2, Loader2, Calendar } from 'lucide-react'
+import { Megaphone, Pin, Plus, Edit2, Trash2, Loader2, Calendar, Sparkles, Clock, BellRing, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -67,7 +67,6 @@ export default function Announcements() {
     }
   })
 
-  // Fetch all reactions with user names for super admin dashboard
   const { data: rawReactionsList } = useQuery({
     queryKey: ['announcement-reactions-admin'],
     queryFn: async () => {
@@ -99,7 +98,7 @@ export default function Announcements() {
       setIsOpen(false)
       setEditingId(null)
       form.reset()
-      toast({ title: "Success", description: `Announcement ${editingId ? 'updated' : 'created'}.` })
+      toast({ title: "Success", description: `Announcement ${editingId ? 'updated' : 'broadcasted'}.` })
     },
     onError: (error: any) => {
       toast({ title: "Failed", description: error.message, variant: "destructive" })
@@ -144,11 +143,16 @@ export default function Announcements() {
   }
 
   return (
-    <div className="space-y-5 sa-page-enter text-slate-800">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+    <div className="space-y-6 text-foreground pb-8">
+      {/* ── Header Section ────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold tracking-tight sa-gradient-text">Company Announcements</h2>
-          <p className="text-slate-400 mt-0.5 text-sm">Broadcast important notifications, compliance updates, and news to the workspace.</p>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
+            Company <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 bg-clip-text text-transparent">Announcements</span>
+          </h2>
+          <p className="text-slate-500 text-sm mt-0.5 font-medium">
+            Broadcast platform-wide notices, compliance policies, and company all-hands updates.
+          </p>
         </div>
         
         <Dialog open={isOpen} onOpenChange={(val) => {
@@ -156,26 +160,31 @@ export default function Announcements() {
           if (!val) { setEditingId(null); form.reset(); }
         }}>
           <DialogTrigger asChild>
-            <Button onClick={openCreate} className="sa-btn-primary h-9 px-4">
-              <Plus className="mr-2 h-4 w-4" />
-              Broadcast Announcement
+            <Button onClick={openCreate} className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold text-xs h-9 px-4 rounded-xl shadow-md shadow-indigo-500/20 transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer">
+              <Plus className="h-4 w-4" />
+              <span>Broadcast Notice</span>
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px] bg-white/95 backdrop-blur-xl border-slate-200/80">
+          <DialogContent className="sm:max-w-[540px] bg-white/95 backdrop-blur-xl border-slate-200 rounded-2xl">
             <DialogHeader>
-              <DialogTitle className="font-bold">{editingId ? 'Edit Announcement' : 'Broadcast Announcement'}</DialogTitle>
-              <DialogDescription>Draft a message to share with all workspace members.</DialogDescription>
+              <DialogTitle className="font-extrabold text-lg text-slate-900 flex items-center gap-2">
+                <Megaphone className="w-5 h-5 text-indigo-600" />
+                {editingId ? 'Edit Announcement' : 'Broadcast New Announcement'}
+              </DialogTitle>
+              <DialogDescription className="text-xs text-slate-500">
+                Draft a message to deliver in real-time across all tenant organizations.
+              </DialogDescription>
             </DialogHeader>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit((v) => saveMutation.mutate(v))} className="space-y-4">
+              <form onSubmit={form.handleSubmit((v) => saveMutation.mutate(v))} className="space-y-4 pt-1">
                 <FormField
                   control={form.control}
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-semibold text-slate-700">Title</FormLabel>
+                      <FormLabel className="text-xs font-bold text-slate-700">Notice Title</FormLabel>
                       <FormControl>
-                        <Input placeholder="Quarterly All-Hands Meeting" className="h-9 text-sm" {...field} />
+                        <Input placeholder="Quarterly All-Hands Meeting & Release Update" className="h-9 text-xs rounded-xl" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -186,11 +195,11 @@ export default function Announcements() {
                   name="content"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-semibold text-slate-700">Message Content</FormLabel>
+                      <FormLabel className="text-xs font-bold text-slate-700">Message Content</FormLabel>
                       <FormControl>
                         <textarea 
-                          className="flex min-h-[100px] w-full rounded-lg border border-slate-200 bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
-                          placeholder="Type your message here..." 
+                          className="flex min-h-[110px] w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2 text-xs shadow-2xs placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-50 font-medium leading-relaxed"
+                          placeholder="Type your message content here..." 
                           {...field} 
                         />
                       </FormControl>
@@ -202,26 +211,26 @@ export default function Announcements() {
                   control={form.control}
                   name="pinned"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-slate-200/80 p-3 bg-slate-50/40">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-xl border border-slate-200 p-3 bg-slate-50/70">
                       <FormControl>
-                        <input type="checkbox" checked={field.value} onChange={field.onChange} className="mt-0.5 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600" />
+                        <input type="checkbox" checked={field.value} onChange={field.onChange} className="mt-0.5 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600 cursor-pointer" />
                       </FormControl>
                       <div className="space-y-0.5 leading-none">
-                        <FormLabel className="text-sm font-medium">Pin to top</FormLabel>
-                        <p className="text-xs text-slate-400">Keep this announcement at the top of the dashboard.</p>
+                        <FormLabel className="text-xs font-bold text-slate-800 cursor-pointer">Pin to top of workspace</FormLabel>
+                        <p className="text-[11px] text-slate-400">Keep this notice prominently highlighted for all users.</p>
                       </div>
                     </FormItem>
                   )}
                 />
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   <FormField
                     control={form.control}
                     name="event_date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-semibold text-slate-700">Event Date & Time (Optional)</FormLabel>
+                        <FormLabel className="text-xs font-bold text-slate-700">Event Date (Optional)</FormLabel>
                         <FormControl>
-                          <Input type="datetime-local" className="h-9 text-sm" {...field} value={field.value || ''} />
+                          <Input type="datetime-local" className="h-9 text-xs rounded-xl" {...field} value={field.value || ''} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -232,19 +241,19 @@ export default function Announcements() {
                     name="expiry_date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-semibold text-slate-700">Expiry Date (Optional)</FormLabel>
+                        <FormLabel className="text-xs font-bold text-slate-700">Expiry Date (Optional)</FormLabel>
                         <FormControl>
-                          <Input type="date" className="h-9 text-sm" {...field} value={field.value || ''} />
+                          <Input type="date" className="h-9 text-xs rounded-xl" {...field} value={field.value || ''} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
-                <DialogFooter>
-                  <Button type="submit" disabled={saveMutation.isPending} className="sa-btn-primary h-9 px-4">
-                    {saveMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {editingId ? 'Save Changes' : 'Broadcast'}
+                <DialogFooter className="pt-2">
+                  <Button type="submit" disabled={saveMutation.isPending} className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold text-xs h-9 px-5 rounded-xl shadow-md shadow-indigo-500/20">
+                    {saveMutation.isPending && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
+                    {editingId ? 'Save Changes' : 'Broadcast Notice'}
                   </Button>
                 </DialogFooter>
               </form>
@@ -253,15 +262,25 @@ export default function Announcements() {
         </Dialog>
       </div>
 
-      <div className="space-y-3">
+      {/* ── Announcements Stream ─────────────────────────────────────── */}
+      <div className="space-y-3.5">
         {isLoading ? (
-          <div className="flex justify-center py-12">
-            <Loader2 className="h-7 w-7 animate-spin text-indigo-500" />
+          <div className="flex justify-center py-16">
+            <div className="flex flex-col items-center gap-3">
+              <div className="h-9 w-9 animate-spin rounded-full border-[3px] border-indigo-600 border-t-transparent" />
+              <p className="text-xs text-slate-500 font-semibold">Loading broadcasts...</p>
+            </div>
           </div>
         ) : !announcements || announcements.length === 0 ? (
-          <div className="text-center p-8 sa-card border-dashed text-slate-400 text-sm">
-            No announcements yet.
-          </div>
+          <Card className="bg-white/85 backdrop-blur-xl border-dashed border-slate-300 rounded-2xl p-12 text-center">
+            <div className="h-12 w-12 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center mx-auto mb-3">
+              <Megaphone className="h-6 w-6 text-indigo-600" />
+            </div>
+            <h3 className="text-sm font-bold text-slate-900">No active announcements</h3>
+            <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+              Broadcast company-wide notices or scheduled all-hands meetings to all teams.
+            </p>
+          </Card>
         ) : (
           announcements.map((ann) => {
             const reactionsForAnn = reactionsList?.filter((r: any) => r.announcement_id === ann.id) || []
@@ -276,22 +295,22 @@ export default function Announcements() {
             }).filter(r => r.count > 0)
 
             return (
-              <div key={ann.id} className={`sa-card transition-all relative hover:z-30 ${ann.pinned ? 'ring-1 ring-indigo-200/50' : ''}`}>
-                {ann.pinned && <div className="h-0.5 bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 rounded-t-xl" />}
-                <div className="p-4 pb-3 flex items-start justify-between">
+              <Card key={ann.id} className={`bg-white/85 backdrop-blur-xl border-slate-200/80 rounded-2xl shadow-2xs hover-lift transition-all relative overflow-hidden ${ann.pinned ? 'ring-1 ring-indigo-300/80 border-indigo-200' : ''}`}>
+                {ann.pinned && <div className="h-1 bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500" />}
+                <div className="p-5 pb-3 flex items-start justify-between">
                   <div>
-                    <div className="flex items-center gap-2">
-                      <div className="sa-icon-box w-7 h-7 rounded-lg">
-                        <Megaphone className="h-3.5 w-3.5 text-indigo-600" />
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200/70 flex items-center justify-center text-indigo-600 shadow-2xs">
+                        <Megaphone className="h-4 w-4" />
                       </div>
-                      <h3 className="text-sm font-bold text-slate-800">{ann.title}</h3>
+                      <h3 className="text-sm font-black text-slate-900">{ann.title}</h3>
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-1 ml-9">
+                    <p className="text-[11px] text-slate-400 font-semibold mt-1.5 ml-10.5">
                       Posted on {new Date(ann.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
                     </p>
-                    <div className="flex flex-wrap gap-2 mt-2 ml-9">
+                    <div className="flex flex-wrap gap-2 mt-2 ml-10.5">
                       {ann.event_date && (
-                        <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm">
+                        <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full shadow-2xs">
                           <Calendar className="h-3 w-3 text-emerald-600 animate-pulse" />
                           Event: {new Date(ann.event_date).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
                         </span>
@@ -307,28 +326,28 @@ export default function Announcements() {
                   </div>
                   <div className="flex items-center gap-1.5">
                     {ann.pinned && (
-                      <span className="sa-badge text-[10px] px-2 py-0.5 flex items-center gap-1">
-                        <Pin className="h-2.5 w-2.5" /> Pinned
+                      <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 flex items-center gap-1">
+                        <Pin className="h-3 w-3" /> Pinned
                       </span>
                     )}
-                    <Button variant="ghost" size="sm" onClick={() => openEdit(ann)} className="h-7 w-7 p-0 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">
+                    <Button variant="ghost" size="sm" onClick={() => openEdit(ann)} className="h-7.5 w-7.5 p-0 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">
                       <Edit2 className="h-3.5 w-3.5" />
                     </Button>
                     <Button variant="ghost" size="sm" onClick={() => {
                       if(confirm('Are you sure you want to delete this announcement?')) {
                         deleteMutation.mutate(ann.id)
                       }
-                    }} className="h-7 w-7 p-0 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
+                    }} className="h-7.5 w-7.5 p-0 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
                 </div>
-                <div className="px-4 pb-4 ml-9">
-                  <p className="text-slate-500 text-sm leading-relaxed whitespace-pre-wrap">{ann.content}</p>
+                <div className="px-5 pb-5 ml-10.5">
+                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap font-medium">{ann.content}</p>
                   
                   {/* Reactions Summary */}
                   {groupedReactions.length > 0 && (
-                    <div className="mt-3 pt-3 border-t border-slate-100 flex flex-wrap gap-2">
+                    <div className="mt-3.5 pt-3 border-t border-slate-100 flex flex-wrap gap-2">
                       {groupedReactions.map(reaction => {
                         const reactorsList = reaction.names ? reaction.names.split(', ') : []
                         const numColsClass = reactorsList.length > 12 
@@ -345,15 +364,13 @@ export default function Announcements() {
                             className="relative group/reactor"
                           >
                             <span
-                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-50 border border-slate-200/60 text-xs font-extrabold text-slate-700 shadow-sm cursor-pointer hover:bg-indigo-50/50 hover:border-indigo-200 transition-all duration-200"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-50 border border-slate-200/80 text-xs font-black text-slate-700 shadow-2xs cursor-pointer hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-200"
                             >
                               <span>{reaction.emoji}</span>
-                              <span className="text-slate-800">{reaction.count}</span>
+                              <span className="text-slate-900">{reaction.count}</span>
                             </span>
 
-                            {/* Premium Hover Card for Reactors (opens below) */}
-                            <div className="absolute top-full left-0 mt-2 w-max max-w-[calc(100vw-3rem)] sm:max-w-2xl bg-white border border-slate-200 p-3.5 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.03)] z-50 opacity-0 pointer-events-none group-hover/reactor:opacity-100 group-hover/reactor:pointer-events-auto transition-all duration-200 transform translate-y-1 group-hover/reactor:translate-y-0 text-left">
-                              <div className="absolute bottom-full left-4 w-2.5 h-2.5 bg-white border-l border-t border-slate-200 rotate-45 translate-y-[6px]" />
+                            <div className="absolute top-full left-0 mt-2 w-max max-w-[calc(100vw-3rem)] sm:max-w-2xl bg-white border border-slate-200 p-3.5 rounded-2xl shadow-xl z-50 opacity-0 pointer-events-none group-hover/reactor:opacity-100 group-hover/reactor:pointer-events-auto transition-all duration-200 transform translate-y-1 group-hover/reactor:translate-y-0 text-left">
                               <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5 select-none">
                                 <span className="text-sm">{reaction.emoji}</span>
                                 <span>Reacted By ({reactorsList.length})</span>
@@ -361,7 +378,7 @@ export default function Announcements() {
                               <div className={`grid ${numColsClass} gap-x-4 gap-y-1.5 max-h-60 overflow-y-auto pr-1`}>
                                 {reactorsList.map((name, idx) => (
                                   <div key={idx} className="flex items-center gap-2 py-0.5 px-1 hover:bg-slate-50 rounded-md transition-colors w-36 min-w-0">
-                                    <div className="w-5.5 h-5.5 rounded-full bg-gradient-to-br from-indigo-50 to-indigo-100/50 text-indigo-700 flex items-center justify-center text-[10px] font-extrabold border border-indigo-200/30 flex-shrink-0">
+                                    <div className="w-5 h-5 rounded-full bg-indigo-50 text-indigo-700 flex items-center justify-center text-[10px] font-extrabold border border-indigo-200 flex-shrink-0">
                                       {name.charAt(0)}
                                     </div>
                                     <span className="text-xs font-semibold text-slate-700 truncate">{name}</span>
@@ -375,7 +392,7 @@ export default function Announcements() {
                     </div>
                   )}
                 </div>
-              </div>
+              </Card>
             )
           })
         )}
