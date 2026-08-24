@@ -470,6 +470,8 @@ export default function DemoPage() {
                       </div>
                     </div>
 
+
+                    
                     <div className="bg-emerald-50/50 p-3 rounded-xl border border-emerald-200 space-y-2">
                       <span className="font-extrabold text-emerald-800 block uppercase tracking-wider text-[10px]">DONE (4 Tasks)</span>
                       <div className="bg-white p-2.5 rounded-lg border border-emerald-200 space-y-1 shadow-2xs">
@@ -485,6 +487,8 @@ export default function DemoPage() {
               </div>
             )}
 
+            
+
             {/* =============================================================== */}
             {/* 2. TASKS / MY TASKS SECTION                                     */}
             {/* =============================================================== */}
@@ -499,6 +503,8 @@ export default function DemoPage() {
                   </div>
                 </div>
 
+
+                
                 <div className="space-y-2.5 text-xs">
                   {[
                     { id: 1, title: 'Implement EPF Statutory Formula Engine', dept: 'Payroll', priority: 'Urgent', status: 'In Progress', due: 'Today' },
@@ -525,6 +531,8 @@ export default function DemoPage() {
                           </span>
                         </div>
 
+
+                        
                         <div className="flex items-center space-x-2 text-[11px]">
                           <span className="text-slate-500 font-medium">{t.dept}</span>
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
