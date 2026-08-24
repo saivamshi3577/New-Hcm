@@ -9,13 +9,10 @@ export default function Performance() {
   const { profile } = useAuthStore()
   const [userScore, setUserScore] = useState(0)
   const [teamAvg, setTeamAvg] = useState(0)
-  
-  // Month-based filtering states: Points reset each month (e.g. August starts at 0), while past months (July, June) retain data
   const currentMonthKey = new Date().toLocaleString('default', { month: 'short', year: 'numeric' })
   const [selectedMonth, setSelectedMonth] = useState<string>(currentMonthKey)
   const [availableMonths, setAvailableMonths] = useState<string[]>([currentMonthKey, 'All Time'])
 
-  // Performance metrics states
   const [tasksThisMonth, setTasksThisMonth] = useState(0)
   const [tasksMonthChange, setTasksMonthChange] = useState(0)
   const [earnedPoints, setEarnedPoints] = useState(0)
