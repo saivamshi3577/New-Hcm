@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast'
  * 
  * TODO: Implement WebSocket or SSE on the Express backend for live push.
  */
+
 export function useGlobalNotifications() {
   const { user, role } = useAuthStore()
   const queryClient = useQueryClient()
