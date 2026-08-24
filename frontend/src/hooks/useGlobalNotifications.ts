@@ -9,8 +9,7 @@ import { useToast } from '@/hooks/use-toast'
  * 
  * Previously used Supabase Realtime (postgres_changes) to listen for live
  * notifications, announcements, and break status changes.
- * 
- * With the Express backend, realtime push is not yet available.
+ 
  * This hook now uses polling as a temporary replacement.
 
  */
