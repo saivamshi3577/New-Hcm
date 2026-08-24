@@ -101,6 +101,9 @@ export default function SkillTrack() {
   const [isCandidateDeleteModalOpen, setIsCandidateDeleteModalOpen] = useState(false)
 
   // Manual Question Builder State
+
+
+  
   const [manualQuestion, setManualQuestion] = useState('')
   const [manualOptions, setManualOptions] = useState<string[]>(['', ''])
   const [manualCorrect, setManualCorrect] = useState('')
