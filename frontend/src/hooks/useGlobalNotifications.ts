@@ -12,8 +12,7 @@ import { useToast } from '@/hooks/use-toast'
  * 
  * With the Express backend, realtime push is not yet available.
  * This hook now uses polling as a temporary replacement.
- * 
- * TODO: Implement WebSocket or SSE on the Express backend for live push.
+
  */
 
 export function useGlobalNotifications() {
